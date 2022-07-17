@@ -180,17 +180,21 @@ int main() {
 
                 // Fit wavelength into CIE 1931 XYZ
                 const vec3f xyz_waveln = vec3f(xFit_1931(waveln_nm), yFit_1931(waveln_nm), zFit_1931(waveln_nm));
+                // Grab the sample from f()
                 const vec3f sample_xyz = xyz_waveln * f(x_pixel, y_pixel, waveln_nm, width, height);
+                // Accumulate into histogram
                 const vec3f pixel_color_xyz = histo.data[pix_idx] + sample_xyz;
                 histo.data[pix_idx] = pixel_color_xyz;
 
                 // Get linear RGB by multiplying xyz vector with the xyz_to_srgb matrix
                 vec3f pixel_color_rgb = vec3f(dot(pixel_color_xyz, xyz_to_srgb_x), dot(pixel_color_xyz, xyz_to_srgb_y), dot(pixel_color_xyz, xyz_to_srgb_z)) / (current_sample_idx + 1);
 
+                // Clamp it
                 pixel_color_rgb.x = std::max(0.0f, std::min(1.0f, pixel_color_rgb.x));
                 pixel_color_rgb.y = std::max(0.0f, std::min(1.0f, pixel_color_rgb.y));
                 pixel_color_rgb.z = std::max(0.0f, std::min(1.0f, pixel_color_rgb.z));
 
+                // Store RGB data to file output buffer
                 g_outbuf[pix_idx * 4 + 0] = (unsigned char)std::min(int(tosrgb(pixel_color_rgb.x) * 255.0f), 255);
                 g_outbuf[pix_idx * 4 + 1] = (unsigned char)std::min(int(tosrgb(pixel_color_rgb.y) * 255.0f), 255);
                 g_outbuf[pix_idx * 4 + 2] = (unsigned char)std::min(int(tosrgb(pixel_color_rgb.z) * 255.0f), 255);
