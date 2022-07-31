@@ -9,10 +9,10 @@
 
 static inline float tosrgb(float c) {
 	c = std::max(0.0f, std::min(1.0f, c));
-	if (c <= 0.0031308) {
-		return 12.92 * c;
+	if (c <= 0.0031308.0f) {
+		return 12.92.0f * c;
 	} else {
-		return (1.055 * pow(c, 0.4166666667)) - 0.055;
+		return (1.055f * powf(c, 0.4166666667f)) - 0.055f;
 	}
 }
 
